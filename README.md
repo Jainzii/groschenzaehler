@@ -1,0 +1,2 @@
+# groschenzaehler
+SoftSkills Sommerprojekt
