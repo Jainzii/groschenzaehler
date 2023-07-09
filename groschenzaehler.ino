@@ -81,4 +81,11 @@ char * dropTier() {
       }
     } 
   }
+
+  void resetTotalAmount() {
+  for (int i = 0; i < 8; i++)
+  money[i] = 0;
+  }
+  Serial.write(0)
+  Blynk.virtualWrite(V4, 0);
 }
