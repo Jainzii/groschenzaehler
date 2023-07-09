@@ -25,22 +25,14 @@ void setup() {
 
 void loop() {
   lcd.setCursor(0, 1);
-  lcd.print(calcMoney());
+  lcd.print(moneyAmount + " Euro");
 
   if (Serial.available()) {
-      int x = Serial.read();
-      if(x>=0 && x<=7 && (millis() > 1000 || bugfix)){
-        money[x] += 1;
-        waitingSounds += 1;
-        bugfix = true;
-      }
+      long moneyAmount = Serial.read();
    }
   playsound();
 }
 
-long calcMoney(){
-  return money[0]*1 + money[1]*2 + money[2]*5 + money[3]*10 + money[4]*20 + money[5]*50 + money[6]*100 + money[7]*200;
-}
 
 void playsound() {
   if (count < limit - 1 && waitingSounds > 0) {
