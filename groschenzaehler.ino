@@ -1,5 +1,3 @@
-#include <NewPing.h>
-
 #define LAZR1 17  // Trigger and Echo Pin of Ultrasonic Sensor
 #define LAZR2 18
 #define LAZR3 13
@@ -13,7 +11,7 @@
 
 
 long lastActivation[NUM_LAZR] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-uint32_t money = 0;
+long money[8] = {0,0,0,0,0,0,0,0};
 
 int lazr[NUM_LAZR] = { LAZR1, LAZR2, LAZR3, LAZR4, LAZR5, LAZR6, LAZR7, LAZR8 };
 
@@ -31,8 +29,7 @@ void sense() {
   for (int i = 0; i < 8; i++) {
     if (millis() - lastActivation[i] > 69) {  //nice
       if (digitalRead(lazr[i]) == 0) {
-          //rausnehmen, wenn alles laser ausgerichtet sind
-          money += intToMoney(i);
+          money[i] += 1;
           lastActivation[i] = millis();
           Serial.write(i);
       }
@@ -40,33 +37,6 @@ void sense() {
   }
 }
 
-uint32_t intToMoney(int i) {
-  uint32_t out;
-  switch (i) {
-    case 0:
-      out = 1;
-      break;
-    case 1:
-      out = 2;
-      break;
-    case 2:
-      out = 5;
-      break;
-    case 3:
-      out = 10;
-      break;
-    case 4:
-      out = 20;
-      break;
-    case 5:
-      out = 50;
-      break;
-    case 6:
-      out = 100;
-      break;
-    case 7:
-      out = 200;
-      break;
-  }
-  return out;
+long calcMoney(){
+  return money[0]*1 + money[1]*2 + money[2]*5 + money[3]*10 + money[4]*20 + money[5]*50 + money[6]*100 + money[7]*200;
 }

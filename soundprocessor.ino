@@ -39,38 +39,7 @@ void loop() {
 }
 
 long calcMoney(){
-  return money[0]*1 + money[1]*2 + money[2]*5 + money[3]*10 + money[4]*20 + money[5]*50 + money[6]*100 + money[7]*200
-}
-
-uint32_t intToMoney(int i) {
-  uint32_t out;
-  switch (i) {
-    case 0:
-      out = 1;
-      break;
-    case 1:
-      out = 2;
-      break;
-    case 2:
-      out = 5;
-      break;
-    case 3:
-      out = 10;
-      break;
-    case 4:
-      out = 20;
-      break;
-    case 5:
-      out = 50;
-      break;
-    case 6:
-      out = 100;
-      break;
-    case 7:
-      out = 200;
-      break;
-  }
-  return out;
+  return money[0]*1 + money[1]*2 + money[2]*5 + money[3]*10 + money[4]*20 + money[5]*50 + money[6]*100 + money[7]*200;
 }
 
 void playsound() {
