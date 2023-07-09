@@ -12,6 +12,11 @@ int limit = 10;
 bool bugfix = false;
 int lastInput = 0;
 long money[8] = {0,0,0,0,0,0,0,0};
+double moneyAmount = 0;
+char* currentTier = "";
+
+char *tiers[] = {"Freibier", "Center Shock", "Bayrisch Creme", "Pringles", "ESP32", "Döner", "Kinoticket", "Zelda: TotK", "10k Robux", "Fallschirmsprung", "Semesterbeitrag", "PS5"};
+double tiersBarriers[12] = {0.0, 0.05, 0.6, 2.49, 2.79, 6.0, 8.99, 59.99, 119.99, 249.99, 399.82, 529.0};
 
 bool block0[3] = { false, false, false };
 bool block1[7] = { false, false, false, false, false, false, false };
@@ -24,11 +29,22 @@ void setup() {
 }
 
 void loop() {
+  lcd.setCursor(0, 0);
+  lcd.print(currentTier);
+
   lcd.setCursor(0, 1);
-  lcd.print(moneyAmount + " Euro");
+  lcd.print(moneyAmount);
+  lcd.print(" Euro");
 
   if (Serial.available()) {
-      long moneyAmount = Serial.read();
+      // amount of cent is read
+      int moneyTmp = Serial.read();
+
+      // change from cent to euro
+      moneyAmount = moneyTmp / 100;
+
+      // string currentTier gets set accpoding to the current tier string o.O
+      currentTier = dropTier(moneyAmount);
    }
   playsound();
 }
@@ -81,5 +97,22 @@ void playsound() {
         block1[i] = false;
       }
     }
+  }
+}
+
+// returns tier string according to current money amount
+char * dropTier(int money) {
+  double currentMoney = money / 100;
+  // to prevent array index out of bounds exception in following loop
+  if(currentMoney >= 529.0) {
+    return tiers[11];
+  }
+
+  for (int i = 0; i < 12; i++) {
+     if(currentMoney >= tiersBarriers[i]) {
+      if(currentMoney < tiersBarriers[i+1]) {
+        return tiers[i];
+      }
+    } 
   }
 }
