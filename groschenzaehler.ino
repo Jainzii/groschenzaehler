@@ -117,6 +117,7 @@ int readTerminalInput(String input) {
   } else if (command.equals("subtract") || command.equals("remove")) {
     return -amount;
   }
+  return 0;
 }
 
 int convertToNumber(String number) {
