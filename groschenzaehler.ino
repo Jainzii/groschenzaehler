@@ -29,6 +29,7 @@ char pass[] = "YourPassword";
 
 long lastActivation[NUM_LAZR] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 long money[8] = {0,0,0,0,0,0,0,0};
+long userInput = 0;
 
 int lazr[NUM_LAZR] = { LAZR1, LAZR2, LAZR3, LAZR4, LAZR5, LAZR6, LAZR7, LAZR8 };
 
@@ -43,6 +44,20 @@ void setup() {
 void loop() {
   Blynk.run();
   sense();
+}
+
+BLYNK_WRITE(V1) {
+  String value = param.asString();
+  int change = readTerminalInput(value);
+  userInput = userInput + change;
+  String output = "Es wurden " + userInput/100;
+  output += "€ ";
+  if (change >= 0) {
+    output += "hinzugefügt.";
+  } else {
+    output += "entfernt.";
+  }
+    Blynk.virtualWrite(V1, output);
 }
 
 //TODO: Blynkapp schauen, Zusammenbauen, Präsi
@@ -64,7 +79,7 @@ void sense() {
 }
 
 long calcMoney(){
-  return money[0]*1 + money[1]*2 + money[2]*5 + money[3]*10 + money[4]*20 + money[5]*50 + money[6]*100 + money[7]*200;
+  return money[0]*1 + money[1]*2 + money[2]*5 + money[3]*10 + money[4]*20 + money[5]*50 + money[6]*100 + money[7]*200 + userInput;
 }
 
 // returns tier string according to current money amount
@@ -81,11 +96,39 @@ char * dropTier() {
       }
     } 
   }
+}
 
-  void resetTotalAmount() {
-  for (int i = 0; i < 8; i++)
-  money[i] = 0;
+void resetTotalAmount() {
+  for (int i = 0; i < 8; i++){
+    money[i] = 0;
   }
-  Serial.write(0)
-  Blynk.virtualWrite(V4, 0);
+  userInput = 0;
+  Serial.write(0);
+  Blynk.virtualWrite(V3, 0);
+}
+
+int readTerminalInput(String input) {
+  int spacePos = input.indexOf(" ");
+  String command = input.substring(0,spacePos);
+  String parameter = input.substring(spacePos + 1);
+  int amount = convertToNumber(parameter);
+  if (command.equals("add")) {
+    return amount;
+  } else if (command.equals("subtract") || command.equals("remove")) {
+    return -amount;
+  }
+}
+
+int convertToNumber(String number) {
+  String validInput = "";
+  for (int i = 0; i < number.length(); i++) {
+    char digit = number.charAt(i);
+    if (isDigit(digit)) {
+      validInput += digit;
+    }
+  }
+  if (validInput.equals("")) {
+    validInput = "0";
+  }
+  return validInput.toInt();
 }
