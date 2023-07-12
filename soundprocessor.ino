@@ -11,41 +11,47 @@ long last = 0;
 int limit = 10;
 bool bugfix = false;
 int lastInput = 0;
-long money[8] = {0,0,0,0,0,0,0,0};
-double moneyAmount = 0;
-char* currentTier = "";
+long money[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+long moneyAmount = 0.0;
+char* currentTier = "Freibier";
 
-char *tiers[] = {"Freibier", "Center Shock", "Bayrisch Creme", "Pringles", "ESP32", "Döner", "Kinoticket", "Zelda: TotK", "10k Robux", "Fallschirmsprung", "Semesterbeitrag", "PS5"};
-double tiersBarriers[12] = {0.0, 0.05, 0.6, 2.49, 2.79, 6.0, 8.99, 59.99, 119.99, 249.99, 399.82, 529.0};
+char* tiers[] = { "Freibier", "Center Shock", "Bayrisch Creme", "Pringles", "ESP32", "Doener", "Kinoticket", "Zelda: TotK", "10k Robux", "Fallschirmsprung", "Semesterbeitrag", "PS5" };
+long tiersBarriers[12] = { 0, 50, 60, 249, 279, 600, 899, 5999, 11999, 24999, 39982, 52900 };
 
 bool block0[3] = { false, false, false };
 bool block1[7] = { false, false, false, false, false, false, false };
 
-void setup() { 
+void setup() {
   lcd.begin(16, 2);
-  lcd.print("hello, world!");
+  lcd.print("Groschenzaehler");
   Serial.begin(9600);
   pinMode(speaker, OUTPUT);
 }
 
 void loop() {
-  lcd.setCursor(0, 0);
-  lcd.print(currentTier);
-
-  lcd.setCursor(0, 1);
-  lcd.print(moneyAmount);
-  lcd.print(" Euro");
-
   if (Serial.available()) {
+    if (millis() > 5000 || bugfix) {
+      bugfix = true;
       // amount of cent is read
       int moneyTmp = Serial.read();
+      if (moneyTmp == 69) {
+        moneyAmount = 0;
+      } else if (moneyTmp > 7) {
+        moneyAmount += calcCoin(moneyTmp - 8);
+      } else {
+        moneyAmount += calcCoin(moneyTmp);
+        waitingSounds += 1;
+      }
+      currentTier = dropTier(moneyAmount);  // string currentTier gets set accpoding to the current tier string o.O
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(currentTier);
 
-      // change from cent to euro
-      moneyAmount = moneyTmp / 100;
-
-      // string currentTier gets set accpoding to the current tier string o.O
-      currentTier = dropTier(moneyAmount);
-   }
+      lcd.setCursor(0, 1);
+      lcd.print(moneyAmount / 100.0);
+      lcd.print(" Euro");
+    }
+  }
   playsound();
 }
 
@@ -100,19 +106,49 @@ void playsound() {
   }
 }
 
+uint32_t calcCoin(int i) {
+  uint32_t out;
+  switch (i) {
+    case 0:
+      out = 1;
+      break;
+    case 1:
+      out = 2;
+      break;
+    case 2:
+      out = 5;
+      break;
+    case 3:
+      out = 10;
+      break;
+    case 4:
+      out = 20;
+      break;
+    case 5:
+      out = 50;
+      break;
+    case 6:
+      out = 100;
+      break;
+    case 7:
+      out = 200;
+      break;
+  }
+  return out;
+}
+
 // returns tier string according to current money amount
-char * dropTier(int money) {
-  double currentMoney = money / 100;
+char* dropTier(long currentMoney) {
+
   // to prevent array index out of bounds exception in following loop
-  if(currentMoney >= 529.0) {
+  if (currentMoney >= 52900) {
     return tiers[11];
   }
-
   for (int i = 0; i < 12; i++) {
-     if(currentMoney >= tiersBarriers[i]) {
-      if(currentMoney < tiersBarriers[i+1]) {
+    if (currentMoney >= tiersBarriers[i]) {
+      if (currentMoney < tiersBarriers[i + 1]) {
         return tiers[i];
       }
-    } 
+    }
   }
 }
