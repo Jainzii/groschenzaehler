@@ -88,22 +88,24 @@ BLYNK_WRITE(V0) {
 }
 
 char * dropTier() {
-  // to prevent array index out of bounds exception in following loop
+  char* tier = "";
   if(calcMoney() >= 52900) {
-    return tiers[11];
+    tier = tiers[11];
   }
 
   for (int i = 0; i < 12; i++) {
      if(calcMoney() / 100.0 >= tiersBarriers[i]) {
       if(calcMoney() / 100.0 < tiersBarriers[i+1]) {
-        return tiers[i];
+        tier = tiers[i];
       }
     } 
   }
+  return tier;
 }
 
+
 uint32_t calcCoin(int i) {
-  uint32_t out;
+  uint32_t out = 0;
   switch (i) {
     case 0:
       out = 1;
@@ -132,6 +134,7 @@ uint32_t calcCoin(int i) {
   }
   return out;
 }
+
 
 void readTerminalInput(String input) {
   int spacePos = input.indexOf(" ");
