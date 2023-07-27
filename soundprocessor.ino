@@ -14,6 +14,7 @@ int lastInput = 0;
 long money[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 long moneyAmount = 0.0;
 char* currentTier = "Freibier";
+char* lastTier = "Freibier";
 
 char* tiers[] = { "Freibier", "Center Shock", "Bayrisch Creme", "Pringles", "ESP32", "Doener", "Kinoticket", "Zelda: TotK", "10k Robux", "Fallschirmsprung", "Semesterbeitrag", "PS5" };
 long tiersBarriers[12] = { 0, 50, 60, 249, 279, 600, 899, 5999, 11999, 24999, 39982, 52900 };
@@ -57,7 +58,7 @@ void loop() {
 
 
 void playsound() {
-  if (count < limit - 1 && waitingSounds > 0) {
+  if (lastTier == currentTier && waitingSounds > 0) {
     if (!block0[0] && (millis() - last >= 500)) {
       block0[0] = true;
       tone(speaker, 988, 100);
@@ -74,15 +75,18 @@ void playsound() {
         block0[i] = false;
       }
     }
-  } else if (count >= limit - 1 && waitingSounds > 0) {
+  } else if (lastTier != currentTier && waitingSounds > 0) {
     if (!block1[0] && (millis() - last >= 880)) {
       block1[0] = true;
       tone(speaker, 1319, 125);
       last = millis();
-    } else if (millis() - last >= 130 && (waitingSounds > 0) && !block1[1] && block1[0]) {
+      
+    } else if (millis() - last >= 130 ) {
       block1[1] = true;
       tone(speaker, 1568, 125);
-    } else if (millis() - last >= 260 && (waitingSounds > 0) && !block1[2] && block1[1]) {
+    } 
+    
+    else if (millis() - last >= 260 && (waitingSounds > 0) && !block1[2] && block1[1]) {
       block1[2] = true;
       tone(speaker, 2637, 125);
     } else if (millis() - last >= 390 && (waitingSounds > 0) && !block1[3] && block1[2]) {
@@ -98,6 +102,7 @@ void playsound() {
       block1[6] = true;
       noTone(speaker);
       waitingSounds -= 1;
+      lastTier = currentTier;
       count = 0;
       for (int i = 0; i < 7; i++) {
         block1[i] = false;
@@ -105,7 +110,6 @@ void playsound() {
     }
   }
 }
-
 uint32_t calcCoin(int i) {
   uint32_t out;
   switch (i) {
