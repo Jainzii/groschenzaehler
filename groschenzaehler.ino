@@ -64,9 +64,6 @@ BLYNK_WRITE(V2) {
   readTerminalInput(value);
 }
 
-//TODO: Blynkapp schauen, Zusammenbauen, Präsi
-
-// TODO: sense -> dropTier() Methode fuer Blynk einfuegen
 void sense() {
   for (int i = 0; i < 8; i++) {
     if (millis() - lastActivation[i] > 69) {  //nice
@@ -90,9 +87,6 @@ BLYNK_WRITE(V0) {
   Serial.write(69);
 }
 
-// async money übertagung, abziehen, münzsound vllcht einmal
-
-// returns tier string according to current money amount
 char * dropTier() {
   // to prevent array index out of bounds exception in following loop
   if(calcMoney() >= 52900) {
